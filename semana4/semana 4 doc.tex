@@ -1,0 +1,124 @@
+\documentclass[12pt]{article}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{a4paper, margin=1in}
+
+\title{Proyecto de Redes, Seguridad y Sistemas Distribuidos \\ en Red Hat Enterprise Linux}
+\author{Luis Martínez del Campo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+El presente proyecto tiene como objetivo diseñar, configurar y asegurar una red de datos básica utilizando sistemas operativos Linux. Se implementaron servicios de red, mecanismos de seguridad y herramientas de sistemas distribuidos, con el fin de integrar conocimientos teóricos en un entorno práctico y funcional.
+
+\section{Diseño de la Red}
+
+Se diseñó una red compuesta por dos máquinas virtuales con Red Hat Enterprise Linux conectadas mediante una red interna.
+
+\subsection{Topología}
+
+\begin{itemize}
+\item Servidor: 192.168.100.10
+\item Cliente: 192.168.100.20
+\item Máscara de red: 255.255.255.0
+\end{itemize}
+
+\section{Modelo OSI Aplicado}
+
+\begin{itemize}
+\item Capa Física: transmisión de datos mediante red virtual en VirtualBox
+\item Capa de Enlace: direccionamiento MAC y tramas Ethernet
+\item Capa de Red: direccionamiento IP estático
+\item Capa de Transporte: uso de TCP para servicios
+\item Capa de Sesión: establecimiento de sesiones SSH
+\item Capa de Presentación: cifrado mediante TLS
+\item Capa de Aplicación: servicios HTTP y SSH
+\end{itemize}
+
+\section{Configuración de Red}
+
+Se asignaron direcciones IP estáticas a cada máquina editando los archivos de configuración de red y reiniciando el servicio NetworkManager.
+
+La conectividad se verificó mediante los comandos \texttt{ping} y \texttt{traceroute}, confirmando la comunicación entre ambas máquinas.
+
+\section{Servicios de Red}
+
+Se instalaron y configuraron los siguientes servicios:
+
+\begin{itemize}
+\item SSH para acceso remoto seguro
+\item HTTP para alojamiento de páginas web
+\item HTTPS para comunicación cifrada
+\end{itemize}
+
+Se verificó el acceso remoto mediante SSH y la visualización de una página web desde el navegador.
+
+\section{Seguridad}
+
+Se implementaron medidas de seguridad fundamentales:
+
+\begin{itemize}
+\item Configuración de firewall con firewalld
+\item Autenticación SSH mediante claves públicas y privadas
+\item Deshabilitación de acceso por contraseña
+\item Cifrado de comunicaciones mediante HTTPS
+\end{itemize}
+
+\section{Análisis de Vulnerabilidades}
+
+Se utilizaron herramientas como:
+
+\begin{itemize}
+\item nmap para escaneo de puertos
+\item lynis para auditoría del sistema
+\end{itemize}
+
+Se identificaron riesgos como puertos abiertos innecesarios y configuraciones por defecto, proponiendo como solución el endurecimiento del firewall y la desactivación de servicios no utilizados.
+
+\section{Sistemas Distribuidos}
+
+Se implementó NFS como sistema de archivos distribuido, permitiendo compartir directorios entre el servidor y el cliente.
+
+Esto permitió el acceso transparente a archivos remotos, demostrando el concepto de transparencia en sistemas distribuidos.
+
+\section{Modelo Peer-to-Peer}
+
+Se utilizó BitTorrent para transferir archivos entre las máquinas, demostrando el modelo P2P donde cada nodo puede actuar como cliente y servidor simultáneamente.
+
+\section{Análisis y Reflexión}
+
+Se observaron ventajas como:
+
+\begin{itemize}
+\item Escalabilidad
+\item Acceso remoto eficiente
+\item Compartición de recursos
+\end{itemize}
+
+Y desventajas como:
+
+\begin{itemize}
+\item Complejidad de configuración
+\item Riesgos de seguridad si no se aplican controles adecuados
+\end{itemize}
+
+\section{Conclusión}
+
+El proyecto permitió integrar conocimientos de redes, seguridad y sistemas distribuidos en un entorno realista, demostrando la importancia de la configuración correcta, la protección de los servicios y la comunicación eficiente entre sistemas.
+
+\end{document}
