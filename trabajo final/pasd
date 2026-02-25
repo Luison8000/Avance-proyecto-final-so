@@ -1,0 +1,102 @@
+import socket
+import ssl
+import json
+import os
+import psutil
+import subprocess
+import signal
+
+HOST = "0.0.0.0"
+PORT = 5000
+usuario_autenticado = False
+
+
+def autenticar(usuario, password):
+    try:
+        with open("../usuarios.json", "r") as archivo:
+            usuarios = json.load(archivo)
+            return usuario in usuarios and usuarios[usuario] == password
+    except:
+        return False
+
+
+def listar_procesos():
+    procesos = []
+    for proceso in psutil.process_iter(['pid', 'name']):
+        try:
+            procesos.append(f"{proceso.info['pid']} - {proceso.info['name']}")
+        except:
+            pass
+    return "\n".join(procesos)
+
+
+def iniciar_proceso(nombre):
+    try:
+        proceso = subprocess.Popen(nombre.split())
+        return f"Proceso iniciado con PID {proceso.pid}"
+    except Exception as e:
+        return str(e)
+
+
+def detener_proceso(pid):
+    try:
+        os.kill(int(pid), signal.SIGTERM)
+        return "Proceso detenido"
+    except Exception as e:
+        return str(e)
+
+
+def estado_sistema():
+    cpu = psutil.cpu_percent(interval=1)
+    memoria = psutil.virtual_memory().percent
+    return f"CPU: {cpu}% | RAM: {memoria}%"
+
+
+def procesar_comando(comando):
+    global usuario_autenticado
+
+    if comando.startswith("LOGIN:"):
+        _, usuario, password = comando.split(":")
+        if autenticar(usuario, password):
+            usuario_autenticado = True
+            return "LOGIN_OK"
+        return "LOGIN_FAIL"
+
+    if not usuario_autenticado:
+        return "ERROR: No autenticado"
+
+    if comando == "LIST":
+        return listar_procesos()
+    elif comando.startswith("START:"):
+        return iniciar_proceso(comando.split(":")[1])
+    elif comando.startswith("STOP:"):
+        return detener_proceso(comando.split(":")[1])
+    elif comando == "STATUS":
+        return estado_sistema()
+    else:
+        return "Comando no reconocido"
+
+
+def iniciar_servidor():
+    contexto = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    contexto.load_cert_chain(certfile="../cert.pem", keyfile="../key.pem")
+
+    servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    servidor.bind((HOST, PORT))
+    servidor.listen()
+
+    print(f"Servidor seguro escuchando en puerto {PORT}...")
+
+    while True:
+        conn, addr = servidor.accept()
+        conn_segura = contexto.wrap_socket(conn, server_side=True)
+
+        datos = conn_segura.recv(4096).decode()
+        respuesta = procesar_comando(datos)
+
+        conn_segura.send(respuesta.encode())
+        conn_segura.close()
+
+
+if __name__ == "__main__":
+    iniciar_servidor()
